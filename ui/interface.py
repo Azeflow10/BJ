@@ -17,11 +17,12 @@ class BlackjackInterface:
         master.geometry("1000x600")
         master.configure(bg="darkgreen")
 
-        self.croupier_card_hidden = True  # Flag pour savoir si la carte du croupier est cachée
+        self.croupier_card_hidden = True  # Savoir si la carte du croupier est caché
 
         self.setup_ui()
 
     def setup_ui(self):
+        # Elements graphiques de l'interface
         self.balance_label = tk.Label(self.master, text=f"Solde: {self.game.balance}€", font=("Arial", 18), bg="darkgreen", fg="white")
         self.balance_label.pack(pady=10)
 
@@ -63,7 +64,7 @@ class BlackjackInterface:
             bet = int(self.bet_entry.get())
             self.game.place_bet(bet)
         except ValueError:
-            messagebox.showerror("Erreur", "Mise invalide")
+            messagebox.showerror("Erreur", "Mise pas valide")
             return
 
         self.bet_entry.config(state="disabled")
@@ -81,15 +82,17 @@ class BlackjackInterface:
             self.split_button.config(state="normal")
 
     def hit(self):
+        # Action de tirer une carte
         self.game.player_hit()
         self.display_cards()
 
         if self.game.player.get_value() > 21:
             self.croupier_card_hidden = False
             self.display_cards()
-            self.end_round("Perdu ! Vous avez dépassé 21.")
+            self.end_round("Perdu ! Vous avez depasser 21.")
 
     def stand(self):
+        # Action de rester
         self.croupier_card_hidden = False
         self.display_cards()
 
@@ -99,8 +102,9 @@ class BlackjackInterface:
         self.end_round(self.game.evaluate())
 
     def double(self):
+        # Doubler la mise
         try:
-            self.game.place_bet(self.game.bet)  # Double la mise
+            self.game.place_bet(self.game.bet)
             self.game.player_hit()
             self.croupier_card_hidden = False
             self.display_cards()
@@ -113,7 +117,7 @@ class BlackjackInterface:
     def split(self):
         try:
             if self.game.player.hand[0][0] != self.game.player.hand[1][0]:
-                raise ValueError("Vous ne pouvez splitter que des cartes de même valeur.")
+                raise ValueError("Vous pouvez que splitter des cartes identiques.")
             first_card = self.game.player.hand.pop()
             second_card = self.game.player.hand.pop()
 
@@ -122,7 +126,7 @@ class BlackjackInterface:
 
             self.game.player.hand = self.main_hand
 
-            # Pioche une carte pour chaque main
+            # Pioche pour chaque main
             self.split_hand.append(self.game.deck.draw())
             self.game.player.add_card(self.game.deck.draw())
 
@@ -131,7 +135,7 @@ class BlackjackInterface:
             self.split_button.config(state="disabled")
             self.double_button.config(state="disabled")
 
-            messagebox.showinfo("Split", "Split effectué. Jouez votre première main.")
+            messagebox.showinfo("Split", "Split fait. Jouez votre premiere main.")
 
         except ValueError as e:
             messagebox.showerror("Erreur", str(e))
@@ -146,25 +150,20 @@ class BlackjackInterface:
         messagebox.showinfo("Résultat", result)
         self.balance_label.config(text=f"Solde: {self.game.balance}€")
 
-        # Désactiver boutons de jeu
         self.hit_button.config(state="disabled")
         self.stand_button.config(state="disabled")
 
-        # Réactiver la saisie de la mise pour rejouer
         self.bet_entry.config(state="normal")
         self.bet_button.config(state="normal")
         self.bet_entry.delete(0, tk.END)
 
-        # Nettoyer les cartes
         self.clear_frames()
-
-        # Réinitialiser la carte cachée
         self.croupier_card_hidden = True
 
-        # Message pour dire "Nouvelle manche !"
-        messagebox.showinfo("Nouvelle Manche", "Entrez votre nouvelle mise pour rejouer ! 🎲")
+        messagebox.showinfo("Nouvelle Manche", "Entrez votre mise pour rejouer ! 🎲")
 
     def new_game(self):
+        # Lancer une nouvelle partie
         self.bet_entry.config(state="normal")
         self.bet_button.config(state="normal")
         self.bet_entry.delete(0, tk.END)
@@ -172,9 +171,11 @@ class BlackjackInterface:
         self.croupier_card_hidden = True
 
     def quit_game(self):
+        # Quitter le jeu
         self.master.quit()
 
     def clear_frames(self):
+        # Efface les cartes affichées
         for frame in (self.player_frame, self.dealer_frame):
             for widget in frame.winfo_children():
                 widget.destroy()
@@ -182,7 +183,7 @@ class BlackjackInterface:
     def display_cards(self):
         self.clear_frames()
 
-        # Affichage des cartes du croupier
+        # Affiche les cartes du croupier
         for idx, card in enumerate(self.game.dealer.hand):
             if idx == 0 and self.croupier_card_hidden:
                 img_path = CARD_BACK_IMAGE
@@ -233,12 +234,6 @@ class BlackjackInterface:
             13: "K"
         }
 
-        suit_map = {
-            "HEARTS": "HEARTS",
-            "DIAMONDS": "DIAMONDS",
-            "CLUBS": "CLUBS",
-            "SPADES": "SPADES"
-        }
 
         value_str = value_map.get(value, str(value))
         suit_str = suit_map.get(suit, str(suit))
@@ -247,7 +242,7 @@ class BlackjackInterface:
 
     def display_card(self, frame, path):
         if not os.path.exists(path):
-            print(f"Erreur : L'image {path} est introuvable.")
+            print(f"Erreur : Image {path} introuvable.")
             path = CARD_BACK_IMAGE
 
         try:
@@ -257,6 +252,6 @@ class BlackjackInterface:
             label.image = photo
             label.pack(side="left", padx=10)
         except Exception as e:
-            print(f"Erreur lors du chargement de l'image : {e}")
-            label = tk.Label(frame, text="Image non trouvée", bg="darkgreen", fg="white")
+            print(f"Erreur chargement image : {e}")
+            label = tk.Label(frame, text="Image non trouvé", bg="darkgreen", fg="white")
             label.pack(side="left", padx=10)

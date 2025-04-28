@@ -4,12 +4,12 @@ import random
 
 class Deck:
     def __init__(self):
-        # Création du deck avec des cartes représentées par (valeur, symbole)
+        # Création du deck
         self.cards = [(v, s) for v in range(1, 14) for s in ['S', 'H', 'D', 'C']]
         self.shuffle()  # Mélanger les cartes lors de la création du deck
 
     def shuffle(self):
-        # Mélanger les cartes en utilisant numpy
+        # Mélanger les cartes
         np.random.shuffle(self.cards)
 
     def draw(self):
